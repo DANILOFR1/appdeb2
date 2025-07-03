@@ -11,6 +11,8 @@ class PontoApp {
         this.timer = null;
         this.stream = null;
         this.currentPhoto = null;
+        this.currentManualWorkDay = null;
+        this.currentPhotoType = null;
         this.init();
     }
 
@@ -271,22 +273,30 @@ class PontoApp {
     // Salvar foto
     async savePhoto() {
         if (this.currentPhoto && this.currentPhotoType) {
-            const photoId = `${this.currentDay.date}_${this.currentPhotoType}_${Date.now()}`;
-            
-            // Salvar foto no IndexedDB
-            await this.savePhotoToDB(photoId, this.currentPhoto, this.currentDay.date, this.currentPhotoType);
-            
-            // Adicionar referência da foto ao dia
-            if (!this.currentDay.photos) this.currentDay.photos = [];
-            this.currentDay.photos.push(photoId);
-            
-            await this.saveWorkDay(this.currentDay);
-            this.updateUI();
-            
-            const now = new Date();
-            this.showNotification(`Horário registrado com foto: ${this.getTimeString(now)}`);
-            
-            // Fechar modal
+            let workDay = this.currentDay;
+            let isManual = false;
+            if (this.currentPhotoType === 'manual' && this.currentManualWorkDay) {
+                workDay = this.currentManualWorkDay;
+                isManual = true;
+            }
+            const photoId = `${workDay.date}_${this.currentPhotoType}_${Date.now()}`;
+            await this.savePhotoToDB(photoId, this.currentPhoto, workDay.date, this.currentPhotoType);
+            if (!workDay.photos) workDay.photos = [];
+            workDay.photos.push(photoId);
+            await this.saveWorkDay(workDay);
+            if (isManual) {
+                this.clearManualForm();
+                if (workDay.date === new Date().toISOString().split('T')[0]) {
+                    this.loadTodayData();
+                }
+                this.loadHistory();
+                this.showNotification('Horário salvo com foto!');
+                this.currentManualWorkDay = null;
+            } else {
+                this.updateUI();
+                const now = new Date();
+                this.showNotification(`Horário registrado com foto: ${this.getTimeString(now)}`);
+            }
             document.getElementById('photo-modal').style.display = 'none';
             this.stopCamera();
             this.currentPhoto = null;
@@ -332,6 +342,7 @@ class PontoApp {
         const saidaAlmoco = document.getElementById('manual-saida-almoco').value;
         const entradaAlmoco = document.getElementById('manual-entrada-almoco').value;
         const saida = document.getElementById('manual-saida').value;
+        const photoEnabled = document.getElementById('manual-photo-enabled').checked;
 
         if (!date || !entrada || !saida) {
             this.showNotification('Data, entrada e saída são obrigatórios!', 'error');
@@ -368,23 +379,31 @@ class PontoApp {
             manualEntry: true
         };
 
-        await this.saveWorkDay(workDay);
-        
-        // Limpar formulário
-        this.clearManualForm();
-        
-        // Recarregar dados
-        if (date === new Date().toISOString().split('T')[0]) {
-            this.loadTodayData();
+        // Se foto estiver habilitada, capturar antes de salvar
+        if (photoEnabled) {
+            this.currentManualWorkDay = workDay;
+            this.currentPhotoType = 'manual';
+            await this.startCamera();
+            document.getElementById('photo-modal').style.display = 'block';
+            // O fluxo de salvar será finalizado em savePhoto()
+        } else {
+            await this.saveWorkDay(workDay);
+            this.clearManualForm();
+            if (date === new Date().toISOString().split('T')[0]) {
+                this.loadTodayData();
+            }
+            this.loadHistory();
+            this.showNotification('Horário salvo com sucesso!');
         }
-        this.loadHistory();
-        
-        this.showNotification('Horário salvo com sucesso!');
     }
 
     // Combinar data e hora
     combineDateTime(date, time) {
-        return new Date(`${date}T${time}`).toISOString();
+        // date: 'YYYY-MM-DD', time: 'HH:MM'
+        const [year, month, day] = date.split('-').map(Number);
+        const [hour, minute] = time.split(':').map(Number);
+        // new Date(ano, mes-1, dia, hora, minuto) cria data local
+        return new Date(year, month - 1, day, hour, minute, 0, 0).toISOString();
     }
 
     // Limpar formulário manual
@@ -393,6 +412,7 @@ class PontoApp {
         document.getElementById('manual-saida-almoco').value = '';
         document.getElementById('manual-entrada-almoco').value = '';
         document.getElementById('manual-saida').value = '';
+        document.getElementById('manual-photo-enabled').checked = false;
     }
 
     // Criar backup

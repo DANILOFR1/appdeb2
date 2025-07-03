@@ -2,59 +2,59 @@
     "name": "Controle de Ponto - App Completo",
     "short_name": "Ponto",
     "description": "App completo para controle de ponto de trabalho com fotos e backup offline",
-    "start_url": "/",
+    "start_url": "/appdeb2/",
     "display": "standalone",
     "background_color": "#667eea",
     "theme_color": "#2196F3",
     "orientation": "portrait-primary",
-    "scope": "/",
+    "scope": "/appdeb2/",
     "lang": "pt-BR",
     "categories": ["productivity", "business", "utilities"],
     "icons": [
         {
-            "src": "icons/icon-72x72.png",
+            "src": "/appdeb2/icons/icon-72x72.png",
             "sizes": "72x72",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-96x96.png",
+            "src": "/appdeb2/icons/icon-96x96.png",
             "sizes": "96x96",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-128x128.png",
+            "src": "/appdeb2/icons/icon-128x128.png",
             "sizes": "128x128",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-144x144.png",
+            "src": "/appdeb2/icons/icon-144x144.png",
             "sizes": "144x144",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-152x152.png",
+            "src": "/appdeb2/icons/icon-152x152.png",
             "sizes": "152x152",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-192x192.png",
+            "src": "/appdeb2/icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-384x384.png",
+            "src": "/appdeb2/icons/icon-384x384.png",
             "sizes": "384x384",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon-512x512.png",
+            "src": "/appdeb2/icons/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable any"
@@ -62,14 +62,14 @@
     ],
     "screenshots": [
         {
-            "src": "screenshots/desktop.png",
+            "src": "/appdeb2/screenshots/desktop.png",
             "sizes": "1280x720",
             "type": "image/png",
             "form_factor": "wide",
             "label": "Tela principal do app"
         },
         {
-            "src": "screenshots/mobile.png",
+            "src": "/appdeb2/screenshots/mobile.png",
             "sizes": "390x844",
             "type": "image/png",
             "form_factor": "narrow",
@@ -81,10 +81,10 @@
             "name": "Registrar Entrada",
             "short_name": "Entrada",
             "description": "Registrar entrada no trabalho",
-            "url": "/?action=entrada",
+            "url": "/appdeb2/?action=entrada",
             "icons": [
                 {
-                    "src": "icons/icon-96x96.png",
+                    "src": "/appdeb2/icons/icon-96x96.png",
                     "sizes": "96x96"
                 }
             ]
@@ -93,10 +93,10 @@
             "name": "Registrar Saída",
             "short_name": "Saída",
             "description": "Registrar saída do trabalho",
-            "url": "/?action=saida",
+            "url": "/appdeb2/?action=saida",
             "icons": [
                 {
-                    "src": "icons/icon-96x96.png",
+                    "src": "/appdeb2/icons/icon-96x96.png",
                     "sizes": "96x96"
                 }
             ]
@@ -105,10 +105,10 @@
             "name": "Fazer Backup",
             "short_name": "Backup",
             "description": "Fazer backup dos dados",
-            "url": "/?action=backup",
+            "url": "/appdeb2/?action=backup",
             "icons": [
                 {
-                    "src": "icons/icon-96x96.png",
+                    "src": "/appdeb2/icons/icon-96x96.png",
                     "sizes": "96x96"
                 }
             ]
@@ -126,7 +126,7 @@
     "protocol_handlers": [
         {
             "protocol": "web+ponto",
-            "url": "/?action=%s"
+            "url": "/appdeb2/?action=%s"
         }
     ]
 } 

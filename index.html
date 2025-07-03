@@ -6,10 +6,10 @@
     <title>Controle de Ponto</title>
     <meta name="description" content="App para controle de ponto de trabalho offline">
     <meta name="theme-color" content="#2196F3">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="/appdeb2/manifest.json">
+    <link rel="icon" type="image/png" href="/appdeb2/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/appdeb2/icons/icon-192x192.png">
+    <link rel="stylesheet" href="/appdeb2/styles.css">
 </head>
 <body>
     <div class="container">
@@ -193,11 +193,11 @@
     </div>
 
     <!-- Service Worker -->
-    <script src="app.js"></script>
+    <script src="/appdeb2/app.js"></script>
     <script>
         // Registrar Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
+            navigator.serviceWorker.register('/appdeb2/sw.js')
                 .then(registration => {
                     console.log('SW registrado com sucesso:', registration);
                     

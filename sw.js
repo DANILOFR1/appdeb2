@@ -1,13 +1,13 @@
 const CACHE_NAME = 'ponto-app-v2';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/manifest.json',
-    '/create-icons.html',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    '/appdeb2/',
+    '/appdeb2/index.html',
+    '/appdeb2/styles.css',
+    '/appdeb2/app.js',
+    '/appdeb2/manifest.json',
+    '/appdeb2/create-icons.html',
+    '/appdeb2/icons/icon-192x192.png',
+    '/appdeb2/icons/icon-512x512.png'
 ];
 
 // Instalar Service Worker

@@ -181,6 +181,10 @@ class PontoApp {
         } else {
             await this.saveWorkDay(this.currentDay);
             this.updateUI();
+            // Atualizar histórico imediatamente se for o último horário (saida)
+            if (type === 'saida') {
+                this.loadHistory();
+            }
             this.showNotification(`Horário registrado: ${this.getTimeString(now)}`);
         }
     }
@@ -397,13 +401,10 @@ class PontoApp {
         }
     }
 
-    // Combinar data e hora
+    // Corrigir função combineDateTime para garantir data correta sem ajuste de fuso
     combineDateTime(date, time) {
-        // date: 'YYYY-MM-DD', time: 'HH:MM'
-        const [year, month, day] = date.split('-').map(Number);
-        const [hour, minute] = time.split(':').map(Number);
-        // new Date(ano, mes-1, dia, hora, minuto) cria data local
-        return new Date(year, month - 1, day, hour, minute, 0, 0).toISOString();
+        // Cria a data local, sem UTC
+        return new Date(date + 'T' + time).toISOString();
     }
 
     // Limpar formulário manual
@@ -754,6 +755,12 @@ class PontoApp {
         }
     }
 
+    // Utilitário para exibir data local corretamente a partir de 'YYYY-MM-DD'
+    formatDateLocal(dateStr) {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
     // Criar item do histórico
     async createHistoryItem(day) {
         const item = document.createElement('div');
@@ -764,11 +771,8 @@ class PontoApp {
         const balanceString = this.formatTime(Math.abs(balance));
         const balanceClass = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'neutral';
         
-        const date = new Date(day.date).toLocaleDateString('pt-BR', {
-            weekday: 'short',
-            day: '2-digit',
-            month: '2-digit'
-        });
+        // Corrigir exibição da data manual
+        const date = this.formatDateLocal(day.date);
 
         const manualBadge = day.manualEntry ? '<span style="color: #FF9800; font-size: 0.8rem;">✏️ Manual</span>' : '';
         
@@ -836,6 +840,9 @@ class PontoApp {
 
         const manualBadge = day.manualEntry ? '<span style="color: #FF9800; font-size: 0.9rem;">✏️ Entrada Manual</span>' : '';
 
+        // Corrigir exibição da data manual
+        const dateStr = this.formatDateLocal(day.date);
+
         // Carregar fotos se existirem
         let photosHTML = '';
         if (day.photos && day.photos.length > 0) {
@@ -860,12 +867,7 @@ class PontoApp {
 
         modalContent.innerHTML = `
             <div style="margin-bottom: 20px;">
-                <h3>${new Date(day.date).toLocaleDateString('pt-BR', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                })} ${manualBadge}</h3>
+                <h3>${dateStr} ${manualBadge}</h3>
             </div>
             <div style="display: grid; gap: 15px;">
                 <div><strong>Entrada:</strong> ${day.entrada ? this.getTimeString(new Date(day.entrada)) : 'Não registrado'}</div>

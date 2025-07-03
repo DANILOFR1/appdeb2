@@ -397,13 +397,10 @@ class PontoApp {
         }
     }
 
-    // Combinar data e hora
+    // Corrigir função combineDateTime para garantir data correta sem ajuste de fuso
     combineDateTime(date, time) {
-        // date: 'YYYY-MM-DD', time: 'HH:MM'
-        const [year, month, day] = date.split('-').map(Number);
-        const [hour, minute] = time.split(':').map(Number);
-        // new Date(ano, mes-1, dia, hora, minuto) cria data local
-        return new Date(year, month - 1, day, hour, minute, 0, 0).toISOString();
+        // Cria a data local, sem UTC
+        return new Date(date + 'T' + time).toISOString();
     }
 
     // Limpar formulário manual

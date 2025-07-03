@@ -401,10 +401,10 @@ class PontoApp {
         }
     }
 
-    // Corrigir função combineDateTime para garantir data correta sem ajuste de fuso
+    // Corrigir função combineDateTime para retornar string local
     combineDateTime(date, time) {
-        // Cria a data local, sem UTC
-        return new Date(date + 'T' + time).toISOString();
+        // Retorna string local, ex: '2024-06-10T08:00'
+        return date + 'T' + time;
     }
 
     // Limpar formulário manual
@@ -775,8 +775,25 @@ class PontoApp {
         const date = this.formatDateLocal(day.date);
 
         const manualBadge = day.manualEntry ? '<span style="color: #FF9800; font-size: 0.8rem;">✏️ Manual</span>' : '';
-        
-        // Carregar fotos se existirem
+        // Botão de edição
+        const editBtn = document.createElement('button');
+        editBtn.textContent = '✏️ Editar';
+        editBtn.className = 'btn btn-outline btn-edit';
+        editBtn.style.marginLeft = '10px';
+        editBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.openEditModal(day);
+        };
+
+        item.innerHTML = `
+            <h3>${date} ${manualBadge}</h3>
+            <div class="details">
+                <div>Trabalhado: ${this.formatTime(workedMinutes)}</div>
+                <div>Saldo: <span class="balance ${balanceClass}">${balance >= 0 ? '+' : '-'}${balanceString}</span></div>
+            </div>
+        `;
+        item.appendChild(editBtn);
+        // Fotos
         let photosHTML = '';
         if (day.photos && day.photos.length > 0) {
             photosHTML = '<div class="photos">';
@@ -791,17 +808,10 @@ class PontoApp {
                 }
             }
             photosHTML += '</div>';
+            const photosDiv = document.createElement('div');
+            photosDiv.innerHTML = photosHTML;
+            item.appendChild(photosDiv);
         }
-
-        item.innerHTML = `
-            <h3>${date} ${manualBadge}</h3>
-            <div class="details">
-                <div>Trabalhado: ${this.formatTime(workedMinutes)}</div>
-                <div>Saldo: <span class="balance ${balanceClass}">${balance >= 0 ? '+' : '-'}${balanceString}</span></div>
-            </div>
-            ${photosHTML}
-        `;
-
         item.addEventListener('click', () => this.showDayDetails(day));
         return item;
     }
@@ -1013,6 +1023,55 @@ class PontoApp {
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
+    }
+
+    // Modal de edição (estrutura básica)
+    openEditModal(day) {
+        // Cria um modal simples para edição
+        let modal = document.getElementById('edit-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'edit-modal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close" id="close-edit-modal">&times;</span>
+                    <h2>Editar Registro</h2>
+                    <form id="edit-form">
+                        <label>Data: <input type="date" id="edit-date"></label><br>
+                        <label>Entrada: <input type="time" id="edit-entrada"></label><br>
+                        <label>Saída Almoço: <input type="time" id="edit-saida-almoco"></label><br>
+                        <label>Retorno Almoço: <input type="time" id="edit-entrada-almoco"></label><br>
+                        <label>Saída: <input type="time" id="edit-saida"></label><br>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        // Preencher valores
+        document.getElementById('edit-date').value = day.date;
+        document.getElementById('edit-entrada').value = day.entrada ? day.entrada.split('T')[1].slice(0,5) : '';
+        document.getElementById('edit-saida-almoco').value = day.saidaAlmoco ? day.saidaAlmoco.split('T')[1].slice(0,5) : '';
+        document.getElementById('edit-entrada-almoco').value = day.entradaAlmoco ? day.entradaAlmoco.split('T')[1].slice(0,5) : '';
+        document.getElementById('edit-saida').value = day.saida ? day.saida.split('T')[1].slice(0,5) : '';
+        modal.style.display = 'block';
+        // Fechar modal
+        document.getElementById('close-edit-modal').onclick = () => { modal.style.display = 'none'; };
+        // Salvar edição
+        document.getElementById('edit-form').onsubmit = async (e) => {
+            e.preventDefault();
+            day.date = document.getElementById('edit-date').value;
+            day.entrada = day.date + 'T' + document.getElementById('edit-entrada').value;
+            day.saidaAlmoco = document.getElementById('edit-saida-almoco').value ? day.date + 'T' + document.getElementById('edit-saida-almoco').value : null;
+            day.entradaAlmoco = document.getElementById('edit-entrada-almoco').value ? day.date + 'T' + document.getElementById('edit-entrada-almoco').value : null;
+            day.saida = day.date + 'T' + document.getElementById('edit-saida').value;
+            day.updatedAt = new Date().toISOString();
+            await this.saveWorkDay(day);
+            modal.style.display = 'none';
+            this.loadHistory();
+            this.showNotification('Registro editado com sucesso!');
+        };
     }
 }
 

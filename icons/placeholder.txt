@@ -1,0 +1,19 @@
+Esta pasta deve conter os ícones do PWA.
+
+Para gerar os ícones:
+1. Abra o arquivo create-icons.html no navegador
+2. Clique em "Gerar Todos os Ícones"
+3. Os ícones serão baixados automaticamente
+4. Coloque todos os ícones nesta pasta
+
+Ícones necessários:
+- icon-72x72.png
+- icon-96x96.png
+- icon-128x128.png
+- icon-144x144.png
+- icon-152x152.png
+- icon-192x192.png
+- icon-384x384.png
+- icon-512x512.png
+
+Sem estes ícones, o PWA pode não funcionar corretamente em alguns dispositivos. 

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerador de Ícones PWA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .icon-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .icon-preview canvas {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .generate-all {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .generate-all:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Gerador de Ícones PWA - Controle de Ponto</h1>
+        <p>Clique em "Gerar Todos" para baixar todos os ícones necessários para o PWA:</p>
+        
+        <button class="generate-all" onclick="generateAllIcons()">🚀 Gerar Todos os Ícones</button>
+        
+        <div id="preview"></div>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Fundo gradiente moderno
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f093fb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Círculo interno com sombra
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.4, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Ícone de relógio moderno
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.06;
+            ctx.lineCap = 'round';
+            
+            // Círculo do relógio
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.25, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Marcadores do relógio
+            ctx.lineWidth = size * 0.02;
+            for (let i = 0; i < 12; i++) {
+                const angle = (i * Math.PI) / 6;
+                const startRadius = size * 0.22;
+                const endRadius = size * 0.25;
+                
+                ctx.beginPath();
+                ctx.moveTo(
+                    size/2 + Math.cos(angle) * startRadius,
+                    size/2 + Math.sin(angle) * startRadius
+                );
+                ctx.lineTo(
+                    size/2 + Math.cos(angle) * endRadius,
+                    size/2 + Math.sin(angle) * endRadius
+                );
+                ctx.stroke();
+            }
+            
+            // Ponteiros do relógio
+            ctx.lineWidth = size * 0.04;
+            
+            // Ponteiro das horas (9:00)
+            ctx.beginPath();
+            ctx.moveTo(size/2, size/2);
+            ctx.lineTo(size/2 - size * 0.08, size/2);
+            ctx.stroke();
+            
+            // Ponteiro dos minutos (12:00)
+            ctx.beginPath();
+            ctx.moveTo(size/2, size/2);
+            ctx.lineTo(size/2, size/2 - size * 0.12);
+            ctx.stroke();
+            
+            // Ponto central
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.02, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Efeito de brilho
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(size * 0.3, size * 0.3, size * 0.1, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            return canvas;
+        }
+        
+        function downloadIcon(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function generateAllIcons() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '<h3>Gerando ícones...</h3>';
+            
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    const canvas = createIcon(size);
+                    const filename = `icon-${size}x${size}.png`;
+                    
+                    // Mostrar preview
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'icon-preview';
+                    previewDiv.innerHTML = `
+                        <canvas width="${size}" height="${size}"></canvas>
+                        <p>${size}x${size}</p>
+                    `;
+                    preview.appendChild(previewDiv);
+                    
+                    // Copiar o canvas para o preview
+                    const previewCanvas = previewDiv.querySelector('canvas');
+                    const previewCtx = previewCanvas.getContext('2d');
+                    previewCtx.drawImage(canvas, 0, 0);
+                    
+                    // Download
+                    downloadIcon(canvas, filename);
+                    
+                    if (index === sizes.length - 1) {
+                        preview.innerHTML += '<h3>✅ Todos os ícones foram gerados e baixados!</h3>';
+                    }
+                }, index * 200);
+            });
+        }
+        
+        // Mostrar preview inicial
+        window.onload = function() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '<h3>Clique em "Gerar Todos" para criar os ícones</h3>';
+        };
+    </script>
+</body>
+</html> 

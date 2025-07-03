@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ponto</title>
+    <meta name="description" content="App para controle de ponto de trabalho offline">
+    <meta name="theme-color" content="#2196F3">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📅 Controle de Ponto</h1>
+            <p class="subtitle">Registre seus horários de trabalho</p>
+        </header>
+
+        <main>
+            <!-- Status do dia atual -->
+            <section class="status-card">
+                <h2>Hoje - <span id="current-date"></span></h2>
+                <div class="status-info">
+                    <div class="status-item">
+                        <span class="label">Status:</span>
+                        <span id="today-status" class="status-badge">Não iniciado</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Tempo trabalhado:</span>
+                        <span id="worked-time">00:00</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Saldo do dia:</span>
+                        <span id="daily-balance" class="balance">00:00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Botões de controle -->
+            <section class="controls">
+                <div class="button-group">
+                    <button id="btn-entrada" class="btn btn-primary" disabled>
+                        🏢 Entrada
+                    </button>
+                    <button id="btn-saida-almoco" class="btn btn-secondary" disabled>
+                        🍽️ Saída Almoço
+                    </button>
+                    <button id="btn-entrada-almoco" class="btn btn-primary" disabled>
+                        🏢 Retorno Almoço
+                    </button>
+                    <button id="btn-saida" class="btn btn-danger" disabled>
+                        🏠 Saída
+                    </button>
+                </div>
+                <div class="photo-option">
+                    <label class="photo-toggle">
+                        <input type="checkbox" id="photo-enabled">
+                        <span class="toggle-slider"></span>
+                        📸 Incluir foto
+                    </label>
+                </div>
+            </section>
+
+            <!-- Entrada Manual de Horários -->
+            <section class="manual-entry">
+                <h2>✏️ Entrada Manual</h2>
+                <div class="manual-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="manual-date">Data:</label>
+                            <input type="date" id="manual-date" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="manual-entrada">Entrada:</label>
+                            <input type="time" id="manual-entrada" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="manual-saida-almoco">Saída Almoço:</label>
+                            <input type="time" id="manual-saida-almoco" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="manual-entrada-almoco">Retorno Almoço:</label>
+                            <input type="time" id="manual-entrada-almoco" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="manual-saida">Saída:</label>
+                            <input type="time" id="manual-saida" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <button id="btn-save-manual" class="btn btn-primary">💾 Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Relatórios -->
+            <section class="reports">
+                <h2>📊 Relatórios</h2>
+                <div class="report-controls">
+                    <div class="date-range">
+                        <div class="form-group">
+                            <label for="report-start">De:</label>
+                            <input type="date" id="report-start" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="report-end">Até:</label>
+                            <input type="date" id="report-end" class="form-input">
+                        </div>
+                    </div>
+                    <button id="btn-generate-report" class="btn btn-primary">📈 Gerar Relatório</button>
+                </div>
+                <div id="report-summary" class="report-summary" style="display: none;">
+                    <div class="summary-item">
+                        <span class="label">Total de dias:</span>
+                        <span id="total-days">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Total trabalhado:</span>
+                        <span id="total-worked">00:00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Meta total:</span>
+                        <span id="total-target">00:00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Saldo geral:</span>
+                        <span id="total-balance" class="balance">00:00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Backup e Restore -->
+            <section class="backup">
+                <h2>💾 Backup e Restore</h2>
+                <div class="backup-controls">
+                    <div class="backup-actions">
+                        <button id="btn-backup" class="btn btn-outline">📤 Fazer Backup</button>
+                        <button id="btn-restore" class="btn btn-outline">📥 Restaurar Backup</button>
+                    </div>
+                    <div class="backup-info">
+                        <p>💡 <strong>Backup:</strong> Salva todos os dados em um arquivo JSON</p>
+                        <p>💡 <strong>Restore:</strong> Restaura dados de um backup anterior</p>
+                    </div>
+                </div>
+                <input type="file" id="restore-file" accept=".json" style="display: none;">
+            </section>
+
+            <!-- Histórico -->
+            <section class="history">
+                <h2>📋 Histórico</h2>
+                <div class="history-controls">
+                    <button id="btn-export" class="btn btn-outline">📊 Exportar CSV</button>
+                    <button id="btn-clear" class="btn btn-outline btn-danger">🗑️ Limpar</button>
+                </div>
+                <div id="history-list" class="history-list">
+                    <!-- Histórico será carregado aqui -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal para detalhes -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Detalhes do Dia</h2>
+                <div id="modal-content"></div>
+            </div>
+        </div>
+
+        <!-- Modal para foto -->
+        <div id="photo-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>📸 Capturar Foto</h2>
+                <div class="photo-container">
+                    <video id="photo-video" autoplay playsinline style="display: none;"></video>
+                    <canvas id="photo-canvas" style="display: none;"></canvas>
+                    <div id="photo-preview" class="photo-preview"></div>
+                    <div class="photo-controls">
+                        <button id="btn-capture" class="btn btn-primary">📸 Capturar</button>
+                        <button id="btn-retake" class="btn btn-secondary" style="display: none;">🔄 Nova Foto</button>
+                        <button id="btn-save-photo" class="btn btn-success" style="display: none;">💾 Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Worker -->
+    <script src="app.js"></script>
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registrado com sucesso:', registration);
+                    
+                    // Verificar se há atualizações
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Nova versão disponível
+                                if (confirm('Nova versão disponível! Deseja atualizar?')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(error => console.log('SW erro:', error));
+        }
+
+        // Verificar se o app pode ser instalado
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botão de instalação se necessário
+            const installButton = document.createElement('button');
+            installButton.textContent = '📱 Instalar App';
+            installButton.className = 'btn btn-primary';
+            installButton.style.position = 'fixed';
+            installButton.style.top = '20px';
+            installButton.style.right = '20px';
+            installButton.style.zIndex = '1000';
+            
+            installButton.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('App instalado');
+                    }
+                    deferredPrompt = null;
+                    installButton.remove();
+                });
+            });
+            
+            document.body.appendChild(installButton);
+        });
+    </script>
+</body>
+</html> 
